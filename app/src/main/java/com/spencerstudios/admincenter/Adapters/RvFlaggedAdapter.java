@@ -57,13 +57,14 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
         holder.flaggedMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 final Context context = view.getContext();
 
                 PopupMenu menu = new PopupMenu(context, view);
 
-                if(mList.get(holder.getAdapterPosition()).isBanned()){
+                if (mList.get(holder.getAdapterPosition()).isBanned()) {
                     menu.getMenu().add(Consts.FLAGGED_DELETE_MEMBER);
-                }else {
+                } else {
                     menu.getMenu().add(Consts.FLAGGED_MARK_AS_BANNED);
                     menu.getMenu().add(Consts.FLAGGED_DELETE_MEMBER);
                 }
@@ -73,7 +74,7 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
 
                         final Query query = groupNotesReference.orderByChild("id").equalTo(mList.get(holder.getAdapterPosition()).getId());
 
-                        if (menuItem.getTitle().equals(Consts.FLAGGED_MARK_AS_BANNED)){
+                        if (menuItem.getTitle().equals(Consts.FLAGGED_MARK_AS_BANNED)) {
                             query.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -81,9 +82,9 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
                                         snapshot.getRef().child("banned").setValue(true).addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()){
+                                                if (task.isSuccessful()) {
                                                     Toast.makeText(context, "member banner", Toast.LENGTH_SHORT).show();
-                                                }else{
+                                                } else {
                                                     Toast.makeText(context, "there was a problem", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
@@ -97,7 +98,7 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
                                 }
                             });
 
-                        }else if (menuItem.getTitle().equals(Consts.FLAGGED_DELETE_MEMBER)){
+                        } else if (menuItem.getTitle().equals(Consts.FLAGGED_DELETE_MEMBER)) {
 
                             query.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -106,9 +107,9 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
                                         snapshot.getRef().removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()){
+                                                if (task.isSuccessful()) {
                                                     Toast.makeText(context, "member removed", Toast.LENGTH_SHORT).show();
-                                                }else{
+                                                } else {
                                                     Toast.makeText(context, "there was a problem removing this member", Toast.LENGTH_SHORT).show();
                                                 }
                                             }
@@ -130,12 +131,12 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
         });
 
         long timeMillis = mList.get(position).getTimeStamp();
-        holder.tvDatetime.setText(mList.get(position).getAuthor().concat("\n").concat( DateFormat.getDateInstance().format(timeMillis)));
+        holder.tvDatetime.setText(mList.get(position).getAuthor().concat("\n").concat(DateFormat.getDateInstance().format(timeMillis)));
 
-        if (mList.get(holder.getAdapterPosition()).isBanned()){
+        if (mList.get(holder.getAdapterPosition()).isBanned()) {
             holder.llRoot.setBackgroundColor(Color.parseColor(Consts.FLAGGED_MEMBER_BANNED_BG_COLOR));
             holder.llBanned.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             holder.llRoot.setBackgroundColor(Color.WHITE);
             holder.llBanned.setVisibility(View.GONE);
         }
