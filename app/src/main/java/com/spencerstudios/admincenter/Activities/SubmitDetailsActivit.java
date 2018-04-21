@@ -107,7 +107,8 @@ public class SubmitDetailsActivit extends AppCompatActivity {
         if (legalForm) {
             databaseReference = FirebaseDatabase.getInstance().getReference();
             if (databaseReference != null) {
-                Member member = new Member(name, reason, author, warned, time);
+                String id = databaseReference.child(Consts.HIT_LIST_NODE).push().getKey();
+                Member member = new Member(name, reason, author, warned, time, false, id);
                 databaseReference.child(Consts.HIT_LIST_NODE).push().setValue(member).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

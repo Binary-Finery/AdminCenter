@@ -53,7 +53,7 @@ public class FragmentFlagged extends Fragment {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Member member = ds.getValue(Member.class);
                     if (member != null) {
-                        mList.add(new Member(member.getName(), member.getReason(), member.getAuthor(), member.isAlreadyWarned(), member.getTimeStamp()));
+                        mList.add(new Member(member.getName(), member.getReason(), member.getAuthor(), member.isAlreadyWarned(), member.getTimeStamp(), member.isBanned(), member.getId()));
                     }
                 }
                 Collections.reverse(mList);

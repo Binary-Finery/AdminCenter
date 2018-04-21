@@ -3,12 +3,14 @@ package com.spencerstudios.admincenter.Activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -45,6 +47,8 @@ public class LogInActivity extends AppCompatActivity {
 
     private SharedPreferences sp;
 
+    private ImageView loginPic;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -58,9 +62,14 @@ public class LogInActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Random r = new Random();
+        loginPic = findViewById(R.id.log_in_pic);
 
-        Toast.makeText(getApplicationContext(), "Login Actvity : " + r.nextInt(100000),Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loginPic.setImageResource(R.mipmap.ic_launcher);
+            }
+        },1000);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setSubtitle(getResources().getString(R.string.toolbar_subtitle));
