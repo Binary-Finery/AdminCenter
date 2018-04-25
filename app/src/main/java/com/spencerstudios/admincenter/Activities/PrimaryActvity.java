@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,24 +16,26 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.spencerstudios.admincenter.Dialogs.DialogBuilders;
 import com.spencerstudios.admincenter.Fragments.FragmentFlagged;
 import com.spencerstudios.admincenter.Fragments.FragmentNotes;
 import com.spencerstudios.admincenter.R;
+import com.spencerstudios.admincenter.Utilities.PrefUtils;
 
 public class PrimaryActvity extends AppCompatActivity {
 
     private int mode = 1;
     private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
     private FirebaseAuth.AuthStateListener authStateListener;
-    private FirebaseDatabase firebaseDatabase;
     private SharedPreferences sp;
-    private SharedPreferences.Editor editor;
 
     @Override
     protected void onStart() {
@@ -51,8 +54,19 @@ public class PrimaryActvity extends AppCompatActivity {
         final SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("has_signed_out", false).apply();
 
+        LinearLayout rootLayout = findViewById(R.id.main_content);
+
+        FirebaseMessaging.getInstance().subscribeToTopic("all");
+
+
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseDatabase = FirebaseDatabase.getInstance();
+
+        String fbu = firebaseAuth.getCurrentUser().getEmail();
+        String user = fbu.substring(0, fbu.indexOf("@"));
+
+        if (user.length() > 0) {
+            Snackbar.make(rootLayout, "Signed is as:\n" + user, Snackbar.LENGTH_LONG).show();
+        }
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -137,6 +151,7 @@ public class PrimaryActvity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+
             case R.id.action_add:
                 if (mode == 1) {
                     startActivity(new Intent(PrimaryActvity.this, SubmitDetailsActivit.class));
@@ -144,6 +159,11 @@ public class PrimaryActvity extends AppCompatActivity {
                     startActivity(new Intent(PrimaryActvity.this, AddNoteActivity.class));
                 }
                 break;
+
+            case R.id.action_settings:
+                DialogBuilders.infoDialog(PrimaryActvity.this, "Settings", "This feature is yet to be added");
+                break;
+
             case R.id.action_sign_out:
                 signOut();
                 break;

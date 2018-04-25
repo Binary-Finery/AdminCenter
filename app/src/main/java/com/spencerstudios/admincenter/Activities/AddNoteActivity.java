@@ -17,13 +17,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.spencerstudios.admincenter.Constants.Consts;
 import com.spencerstudios.admincenter.Models.Note;
+import com.spencerstudios.admincenter.Utilities.PrefUtils;
+import com.spencerstudios.admincenter.Utilities.PushNotificationHelper;
 import com.spencerstudios.admincenter.R;
 
 public class AddNoteActivity extends AppCompatActivity {
 
     private EditText etSubject;
     private EditText etNote;
-    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,15 +37,14 @@ public class AddNoteActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+
         etSubject = findViewById(R.id.et_note_subject);
         etNote = findViewById(R.id.et_note_body);
-
     }
 
     private void showMessage(String msg){
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,7 +68,7 @@ public class AddNoteActivity extends AppCompatActivity {
         }
     }
 
-    private void submitNewNote(){
+    public void submitNewNote(){
 
         boolean legalForm = true;
         FirebaseUser firebaseAuth = FirebaseAuth.getInstance().getCurrentUser();
@@ -93,7 +93,7 @@ public class AddNoteActivity extends AppCompatActivity {
         }
 
         if (legalForm) {
-            databaseReference = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
             if (databaseReference != null) {
                 String id = databaseReference.child(Consts.GROUP_NOTES).push().getKey();
                 Note note = new Note(subject, noteBody, author, System.currentTimeMillis(), id);
@@ -101,7 +101,10 @@ public class AddNoteActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
+                            etSubject.setText("");
+                            etNote.setText("");
                             showMessage("successfully added new note");
+                            PushNotificationHelper.sendPushNotification(PrefUtils.getUserPref(AddNoteActivity.this), "note");
                         } else {
                             showMessage("there was a problem adding new note to the database");
                         }

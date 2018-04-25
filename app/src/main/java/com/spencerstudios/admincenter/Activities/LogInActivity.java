@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.spencerstudios.admincenter.Constants.Consts;
 import com.spencerstudios.admincenter.R;
+import com.spencerstudios.admincenter.Utilities.PrefUtils;
 
 import java.util.Random;
 
@@ -38,16 +39,12 @@ public class LogInActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private GoogleApiClient mGoogleApiClient;
-
     private final static int RC_SIGN_IN = 2;
 
     private LinearLayout llSignInContainer;
+    private ImageView loginPic;
 
     boolean isSignedIn = false;
-
-    private SharedPreferences sp;
-
-    private ImageView loginPic;
 
     @Override
     protected void onStart() {
@@ -104,11 +101,9 @@ public class LogInActivity extends AppCompatActivity {
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        //signIn();
-
         llSignInContainer = findViewById(R.id.ll_sign_in_container);
-
         llSignInContainer.setVisibility(View.INVISIBLE);
+
         SignInButton signInButton = findViewById(R.id.btn_sign_in);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,8 +112,7 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
 
-        sp = PreferenceManager.getDefaultSharedPreferences(this);
-
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         boolean hasSignedOut = sp.getBoolean("has_signed_out", true);
 
         if(hasSignedOut){
@@ -163,8 +157,7 @@ public class LogInActivity extends AppCompatActivity {
                             if (fbu != null) {
                                 email = fbu.getEmail().substring(0, fbu.getEmail().indexOf("@"));
                             }
-                            SharedPreferences.Editor editor = sp.edit();
-                            editor.putString(Consts.PREF_CURRENT_USER, email).apply();
+                            PrefUtils.setUserPref(LogInActivity.this, email);
                             finish();
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         } else {

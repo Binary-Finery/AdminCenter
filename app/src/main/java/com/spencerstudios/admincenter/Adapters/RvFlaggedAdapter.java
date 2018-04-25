@@ -53,7 +53,6 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
     public void onBindViewHolder(final ItemHolder holder, int position) {
         holder.tvName.setText(mList.get(position).getName());
         holder.tvReason.setText(mList.get(position).getReason());
-        holder.cbWarned.setChecked(mList.get(position).isAlreadyWarned());
         holder.flaggedMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -153,7 +152,6 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
         TextView tvName;
         TextView tvReason;
         TextView tvDatetime;
-        AppCompatCheckBox cbWarned;
         ImageView flaggedMenu;
 
         ItemHolder(View view) {
@@ -164,7 +162,6 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
             tvName = view.findViewById(R.id.tv_name);
             tvReason = view.findViewById(R.id.tv_reason);
             tvDatetime = view.findViewById(R.id.tv_datetime);
-            cbWarned = view.findViewById(R.id.cb_warned);
             flaggedMenu = view.findViewById(R.id.iv_flagged_menu);
         }
     }

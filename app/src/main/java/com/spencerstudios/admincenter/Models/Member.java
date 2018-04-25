@@ -5,7 +5,6 @@ public class Member {
     public String name;
     private String reason;
     private String author;
-    private boolean alreadyWarned;
     private long timeStamp;
     private boolean isBanned;
     private String id;
@@ -14,11 +13,10 @@ public class Member {
         /*empty constructor*/
     }
 
-    public Member(String name, String reason, String author, boolean alreadyWarned, long timeStamp, boolean isBanned, String id) {
+    public Member(String name, String reason, String author, long timeStamp, boolean isBanned, String id) {
         this.name = name;
         this.reason = reason;
         this.author = author;
-        this.alreadyWarned = alreadyWarned;
         this.timeStamp = timeStamp;
         this.isBanned = isBanned;
         this.id = id;
@@ -36,16 +34,8 @@ public class Member {
         return author;
     }
 
-    public boolean isAlreadyWarned() {
-        return alreadyWarned;
-    }
-
     public long getTimeStamp() {
         return timeStamp;
-    }
-
-    public void setAlreadyWarned(boolean alreadyWarned){
-        this.alreadyWarned = alreadyWarned;
     }
 
     public boolean isBanned() {

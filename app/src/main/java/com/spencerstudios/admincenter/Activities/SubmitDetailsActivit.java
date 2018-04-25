@@ -21,7 +21,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.spencerstudios.admincenter.Constants.Consts;
 import com.spencerstudios.admincenter.Models.Member;
+import com.spencerstudios.admincenter.Utilities.PushNotificationHelper;
 import com.spencerstudios.admincenter.R;
+import com.spencerstudios.admincenter.Utilities.PrefUtils;
 
 public class SubmitDetailsActivit extends AppCompatActivity {
 
@@ -29,7 +31,7 @@ public class SubmitDetailsActivit extends AppCompatActivity {
 
     private EditText etName, etOther;
     private TextInputLayout til;
-    private RadioButton rad1, rad2, rad3, rad4, rad5;
+    private RadioButton rad1, rad2, rad3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +81,7 @@ public class SubmitDetailsActivit extends AppCompatActivity {
             otherReasonSelected = true;
             reason = etOther.getText().toString().trim();
         }
-        boolean warned = rad4.isChecked();
+
         long time = System.currentTimeMillis();
         String author = "";
 
@@ -108,12 +110,17 @@ public class SubmitDetailsActivit extends AppCompatActivity {
             databaseReference = FirebaseDatabase.getInstance().getReference();
             if (databaseReference != null) {
                 String id = databaseReference.child(Consts.HIT_LIST_NODE).push().getKey();
-                Member member = new Member(name, reason, author, warned, time, false, id);
+                Member member = new Member(name, reason, author, time, false, id);
                 databaseReference.child(Consts.HIT_LIST_NODE).push().setValue(member).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            showMessage("successfully added new member to the hit list");
+                            rad1.setChecked(true);
+                            etName.setText("");
+                            etOther.setText("");
+                            showMessage("new member added");
+                           PushNotificationHelper.sendPushNotification(PrefUtils.getUserPref(SubmitDetailsActivit.this), "flagged member");
+
                         } else {
                             showMessage("there was a problem adding member to the database");
                         }
@@ -141,11 +148,8 @@ public class SubmitDetailsActivit extends AppCompatActivity {
         rad1 = findViewById(R.id.radio_button_one);
         rad2 = findViewById(R.id.radio_button_two);
         rad3 = findViewById(R.id.radio_button_3);
-        rad4 = findViewById(R.id.radio_button_4);
-        rad5 = findViewById(R.id.radio_button_5);
 
         rad1.setChecked(true);
-        rad5.setChecked(true);
 
         rad3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

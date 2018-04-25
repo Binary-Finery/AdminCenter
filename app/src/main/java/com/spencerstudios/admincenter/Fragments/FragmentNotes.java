@@ -30,7 +30,6 @@ public class FragmentNotes extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_group_notes, container, false);
 
-
         final ArrayList<Note> notes = new ArrayList<>();
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
