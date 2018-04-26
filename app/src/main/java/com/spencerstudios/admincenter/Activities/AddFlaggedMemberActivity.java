@@ -21,11 +21,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.spencerstudios.admincenter.Constants.Consts;
 import com.spencerstudios.admincenter.Models.Member;
-import com.spencerstudios.admincenter.Utilities.PushNotificationHelper;
 import com.spencerstudios.admincenter.R;
 import com.spencerstudios.admincenter.Utilities.PrefUtils;
+import com.spencerstudios.admincenter.Utilities.PushNotificationHelper;
 
-public class SubmitDetailsActivit extends AppCompatActivity {
+public class AddFlaggedMemberActivity extends AppCompatActivity {
 
     private DatabaseReference databaseReference;
 
@@ -119,7 +119,7 @@ public class SubmitDetailsActivit extends AppCompatActivity {
                             etName.setText("");
                             etOther.setText("");
                             showMessage("new member added");
-                           PushNotificationHelper.sendPushNotification(PrefUtils.getUserPref(SubmitDetailsActivit.this), "flagged member");
+                            PushNotificationHelper.sendPushNotification(PrefUtils.getUserPref(AddFlaggedMemberActivity.this, Consts.PREFS_USER_KEY, ""), "flagged member");
 
                         } else {
                             showMessage("there was a problem adding member to the database");

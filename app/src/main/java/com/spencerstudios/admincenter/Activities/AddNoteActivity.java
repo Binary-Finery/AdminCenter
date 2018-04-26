@@ -17,9 +17,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.spencerstudios.admincenter.Constants.Consts;
 import com.spencerstudios.admincenter.Models.Note;
+import com.spencerstudios.admincenter.R;
 import com.spencerstudios.admincenter.Utilities.PrefUtils;
 import com.spencerstudios.admincenter.Utilities.PushNotificationHelper;
-import com.spencerstudios.admincenter.R;
 
 public class AddNoteActivity extends AppCompatActivity {
 
@@ -104,7 +104,7 @@ public class AddNoteActivity extends AppCompatActivity {
                             etSubject.setText("");
                             etNote.setText("");
                             showMessage("successfully added new note");
-                            PushNotificationHelper.sendPushNotification(PrefUtils.getUserPref(AddNoteActivity.this), "note");
+                            PushNotificationHelper.sendPushNotification(PrefUtils.getUserPref(AddNoteActivity.this, Consts.PREFS_USER_KEY, ""), "note");
                         } else {
                             showMessage("there was a problem adding new note to the database");
                         }

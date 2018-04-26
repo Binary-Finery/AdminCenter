@@ -32,19 +32,15 @@ import com.spencerstudios.admincenter.Constants.Consts;
 import com.spencerstudios.admincenter.R;
 import com.spencerstudios.admincenter.Utilities.PrefUtils;
 
-import java.util.Random;
-
 public class LogInActivity extends AppCompatActivity {
 
+    private final static int RC_SIGN_IN = 2;
+    boolean isSignedIn = false;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private GoogleApiClient mGoogleApiClient;
-    private final static int RC_SIGN_IN = 2;
-
     private LinearLayout llSignInContainer;
     private ImageView loginPic;
-
-    boolean isSignedIn = false;
 
     @Override
     protected void onStart() {
@@ -157,7 +153,7 @@ public class LogInActivity extends AppCompatActivity {
                             if (fbu != null) {
                                 email = fbu.getEmail().substring(0, fbu.getEmail().indexOf("@"));
                             }
-                            PrefUtils.setUserPref(LogInActivity.this, email);
+                            PrefUtils.setUserPref(LogInActivity.this, Consts.PREFS_USER_KEY, email);
                             finish();
                             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         } else {

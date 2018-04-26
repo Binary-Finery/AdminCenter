@@ -17,18 +17,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.spencerstudios.admincenter.Dialogs.DialogBuilders;
 import com.spencerstudios.admincenter.Fragments.FragmentFlagged;
 import com.spencerstudios.admincenter.Fragments.FragmentNotes;
 import com.spencerstudios.admincenter.R;
-import com.spencerstudios.admincenter.Utilities.PrefUtils;
 
 public class PrimaryActvity extends AppCompatActivity {
 
@@ -36,6 +30,9 @@ public class PrimaryActvity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
     private SharedPreferences sp;
+    private SharedPreferences.OnSharedPreferenceChangeListener changeListener;
+    private ViewPager viewPager;
+
 
     @Override
     protected void onStart() {
@@ -51,13 +48,44 @@ public class PrimaryActvity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        viewPager = findViewById(R.id.container);
+
+        viewPager.setBackgroundResource(sp.getBoolean("boobs", true) ? R.drawable.lady : 0);
+
+        boolean subscribed = sp.getBoolean("subscribe", true);
+        if (subscribed) {
+            FirebaseMessaging.getInstance().subscribeToTopic("global");
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("global");
+        }
+
+        changeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (key.equals("subscribe")) {
+                    boolean sub = sp.getBoolean("subscribe", true);
+                    if (sub) {
+                        FirebaseMessaging.getInstance().subscribeToTopic("global");
+                    } else {
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic("global");
+                    }
+                } else if (key.equals("boobs")) {
+                    boolean baps = sp.getBoolean("boobs", true);
+                    if (baps) {
+                        viewPager.setBackgroundResource(R.drawable.lady);
+                    } else {
+                        viewPager.setBackgroundResource(0);
+                    }
+                }
+            }
+        };
+
+        sp.registerOnSharedPreferenceChangeListener(changeListener);
         final SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean("has_signed_out", false).apply();
 
         LinearLayout rootLayout = findViewById(R.id.main_content);
-
-        FirebaseMessaging.getInstance().subscribeToTopic("all");
-
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -65,7 +93,7 @@ public class PrimaryActvity extends AppCompatActivity {
         String user = fbu.substring(0, fbu.indexOf("@"));
 
         if (user.length() > 0) {
-            Snackbar.make(rootLayout, "Signed is as:\n" + user, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(rootLayout, "Signed is as '" + user + "'", Snackbar.LENGTH_LONG).show();
         }
 
         authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -85,7 +113,6 @@ public class PrimaryActvity extends AppCompatActivity {
             getSupportActionBar().setSubtitle("Flagged members");
         }
 
-        ViewPager viewPager = findViewById(R.id.container);
         TabLayout tabLayout = findViewById(R.id.tabs);
 
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -117,6 +144,49 @@ public class PrimaryActvity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_add:
+                if (mode == 1) {
+                    startActivity(new Intent(PrimaryActvity.this, AddFlaggedMemberActivity.class));
+                } else if (mode == 2) {
+                    startActivity(new Intent(PrimaryActvity.this, AddNoteActivity.class));
+                }
+                break;
+
+            case R.id.action_settings:
+                //DialogBuilders.infoDialog(PrimaryActvity.this, "Settings", "This feature is yet to be added");
+                startActivity(new Intent(PrimaryActvity.this, SettingsActivity.class));
+                break;
+
+            case R.id.action_sign_out:
+                signOut();
+                break;
+        }
+        return false;
+    }
+
+    private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+        SharedPreferences.Editor ed = sp.edit();
+        ed.putBoolean("has_signed_out", true).apply();
+    }
+
+    public void onBackPressed() {
+        sp.unregisterOnSharedPreferenceChangeListener(changeListener);
+        firebaseAuth.removeAuthStateListener(authStateListener);
+        finishAffinity();
+    }
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
@@ -139,45 +209,5 @@ public class PrimaryActvity extends AppCompatActivity {
         public int getCount() {
             return 2;
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.action_add:
-                if (mode == 1) {
-                    startActivity(new Intent(PrimaryActvity.this, SubmitDetailsActivit.class));
-                } else if (mode == 2) {
-                    startActivity(new Intent(PrimaryActvity.this, AddNoteActivity.class));
-                }
-                break;
-
-            case R.id.action_settings:
-                DialogBuilders.infoDialog(PrimaryActvity.this, "Settings", "This feature is yet to be added");
-                break;
-
-            case R.id.action_sign_out:
-                signOut();
-                break;
-        }
-        return false;
-    }
-
-    private void signOut() {
-        FirebaseAuth.getInstance().signOut();
-        SharedPreferences.Editor ed = sp.edit();
-        ed.putBoolean("has_signed_out", true).apply();
-    }
-
-    public void onBackPressed() {
-        finishAffinity();
     }
 }

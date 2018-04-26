@@ -3,8 +3,6 @@ package com.spencerstudios.admincenter.Adapters;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,8 +15,6 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.spencerstudios.admincenter.Constants.Consts;
 import com.spencerstudios.admincenter.Models.Note;
 import com.spencerstudios.admincenter.R;
+import com.spencerstudios.admincenter.Utilities.PrefUtils;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -87,13 +84,12 @@ public class RvNotesAdapter extends RecyclerView.Adapter<RvNotesAdapter.Holder> 
                                 Toast.makeText(context, "unable to copy to clipboard", Toast.LENGTH_SHORT).show();
                             }
                         } else if (menuItem.getTitle().equals(Consts.NOTE_MENU_DELETE)) {
-                            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-                            String user = sp.getString(Consts.PREF_CURRENT_USER, "");
 
-                            if (user.equalsIgnoreCase(notes.get(holder.getAdapterPosition()).getAuthor())) {
+                            String user = PrefUtils.getUserPref(context, Consts.PREFS_USER_KEY, "");
+                            String author = notes.get(holder.getAdapterPosition()).getAuthor();
 
+                            if (user.equals(author)) {
                                 Query query = groupNotesReference.orderByChild("id").equalTo(notes.get(holder.getAdapterPosition()).getId());
-
                                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -108,7 +104,7 @@ public class RvNotesAdapter extends RecyclerView.Adapter<RvNotesAdapter.Holder> 
                                     }
                                 });
                             } else {
-                                Toast.makeText(context, "only the note author may delete this note", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "only the note author can delete this note", Toast.LENGTH_LONG).show();
                             }
                         }
                         return false;

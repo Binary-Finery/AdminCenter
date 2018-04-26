@@ -7,17 +7,22 @@ import android.preference.PreferenceManager;
 
 public class PrefUtils {
 
-    private static SharedPreferences prefs;
     private static final String USER = "user";
+    private static SharedPreferences prefs;
 
-    public static String getUserPref(Context context){
+    public static String getUserPref(Context context, String KEY, String DEF) {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(USER, "");
+        return prefs.getString(KEY, DEF);
     }
 
-    public static void setUserPref(Context context, String user){
+    public static void setUserPref(Context context, String KEY, String content) {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(USER, user).apply();
+        editor.putString(KEY, content).apply();
+    }
+
+    public static boolean getBooleanPrefs(Context context, String KEY, boolean DEF) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(KEY, DEF);
     }
 }

@@ -3,7 +3,6 @@ package com.spencerstudios.admincenter.Adapters;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -107,7 +106,7 @@ public class RvFlaggedAdapter extends RecyclerView.Adapter<RvFlaggedAdapter.Item
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    Toast.makeText(context, "member removed", Toast.LENGTH_SHORT).show();
+                                                    Log.d("FLAGGED MEMBER", "SUCCESSFULLY REMOVED FROM FB");
                                                 } else {
                                                     Toast.makeText(context, "there was a problem removing this member", Toast.LENGTH_SHORT).show();
                                                 }
